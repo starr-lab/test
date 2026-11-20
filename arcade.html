@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PS5 Arcade</title><style>
+*{box-sizing:border-box}body{margin:0;background:#071426;color:#fff;font:16px Arial,sans-serif;padding:22px}
+h1{font-weight:300}button{background:#1d65b5;color:white;border:1px solid #75b8ff;border-radius:10px;padding:12px 18px;margin:5px;cursor:pointer;font-size:16px}
+.panel{background:#102746;border:1px solid #315b8a;border-radius:15px;padding:18px;margin:15px 0}
+#board{display:grid;grid-template-columns:repeat(3, minmax(55px,90px));gap:7px;margin:15px 0}
+.cell{height:75px;background:#173b66;border:1px solid #5594d2;border-radius:8px;color:#fff;font-size:32px}
+#status{color:#bcdcff}.small{color:#aac5e7;font-size:13px}
+</style></head><body>
+<h1>PS5 ARCADE</h1><p class="small">Built-in games run inside this TV media page.</p>
+<section class="panel"><h2>Tic-Tac-Toe</h2><p id="status">X goes first — local pass-and-play for two people.</p>
+<div id="board"></div><button onclick="resetGame()">New round</button></section>
+<section class="panel"><h2>Reaction Test</h2><p id="reaction">Press Start, then tap the button when it turns green.</p>
+<button id="start" onclick="startReaction()">Start</button><button id="tap" onclick="tapReaction()" disabled>Tap!</button></section>
+<script>
+let cells=Array(9).fill(""), turn="X", over=false;
+const board=document.getElementById("board"), statusEl=document.getElementById("status");
+function draw(){board.innerHTML="";cells.forEach((v,i)=>{let b=document.createElement("button");b.className="cell";b.textContent=v;b.onclick=()=>play(i);board.appendChild(b)})}
+function play(i){if(over||cells[i])return;cells[i]=turn;let wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];let won=wins.some(w=>w.every(n=>cells[n]===turn));if(won){statusEl.textContent=turn+" wins!";over=true}else if(cells.every(Boolean)){statusEl.textContent="Draw!";over=true}else{turn=turn==="X"?"O":"X";statusEl.textContent=turn+" goes next"}draw()}
+function resetGame(){cells=Array(9).fill("");turn="X";over=false;statusEl.textContent="X goes first — local pass-and-play for two people.";draw()}draw();
+let ready=false,started=0,timer;
+function startReaction(){clearTimeout(timer);ready=false;document.getElementById("tap").disabled=true;document.getElementById("reaction").textContent="Wait for green…";timer=setTimeout(()=>{ready=true;started=Date.now();document.getElementById("tap").disabled=false;document.getElementById("tap").style.background="#16833b";document.getElementById("reaction").textContent="TAP NOW!"},1200+Math.random()*3000)}
+function tapReaction(){if(!ready){document.getElementById("reaction").textContent="Too early — try again.";return}let ms=Date.now()-started;ready=false;document.getElementById("tap").disabled=true;document.getElementById("tap").style.background="";document.getElementById("reaction").textContent="Your reaction time: "+ms+" ms. Press Start to play again."}
+</script></body></html>
